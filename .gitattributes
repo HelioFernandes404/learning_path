@@ -1,0 +1,149 @@
+# ==============================================================================
+# Auto Line Ending Normalization
+# ==============================================================================
+* text=auto
+
+# ==============================================================================
+# Unix/Linux Line Endings (LF)
+# ==============================================================================
+*.py text eol=lf
+*.sh text eol=lf
+*.bash text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.jsonc text eol=lf
+*.toml text eol=lf
+*.ini text eol=lf
+*.cfg text eol=lf
+*.conf text eol=lf
+*.txt text eol=lf
+*.md text eol=lf
+*.rst text eol=lf
+Makefile text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+.dockerignore text eol=lf
+.editorconfig text eol=lf
+.env.example text eol=lf
+Dockerfile text eol=lf
+docker-compose.yml text eol=lf
+docker-compose.yaml text eol=lf
+
+# ==============================================================================
+# Windows Line Endings (CRLF)
+# ==============================================================================
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+*.exe binary
+
+# ==============================================================================
+# .NET / C#
+# ==============================================================================
+*.cs text eol=lf
+*.csproj text eol=lf
+*.sln text eol=lf
+*.vbproj text eol=lf
+
+# ==============================================================================
+# TypeScript / JavaScript
+# ==============================================================================
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.mjs text eol=lf
+*.cjs text eol=lf
+*.json text eol=lf
+*.package.json text eol=lf
+
+# ==============================================================================
+# Go
+# ==============================================================================
+*.go text eol=lf
+go.mod text eol=lf
+go.sum text eol=lf
+
+# ==============================================================================
+# Rust
+# ==============================================================================
+*.rs text eol=lf
+Cargo.toml text eol=lf
+Cargo.lock text eol=lf
+
+# ==============================================================================
+# Java
+# ==============================================================================
+*.java text eol=lf
+*.gradle text eol=lf
+pom.xml text eol=lf
+
+# ==============================================================================
+# Binary Files (No Line Ending Conversion)
+# ==============================================================================
+*.pyc binary
+*.pyo binary
+*.pyd binary
+*.so binary
+*.exe binary
+*.dll binary
+*.dylib binary
+*.o binary
+*.a binary
+*.lib binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.7z binary
+*.rar binary
+*.jar binary
+*.class binary
+*.gem binary
+
+# ==============================================================================
+# Images & Media (Binary)
+# ==============================================================================
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.svg text eol=lf
+*.mp4 binary
+*.mov binary
+*.mp3 binary
+*.wav binary
+*.flv binary
+*.swf binary
+*.pdf binary
+
+# ==============================================================================
+# Archives & Compressed
+# ==============================================================================
+*.zip binary
+*.tar binary
+*.tar.gz binary
+*.tar.bz2 binary
+*.rar binary
+*.7z binary
+*.iso binary
+*.dmg binary
+
+# ==============================================================================
+# Diff Settings for Better Code Reviews
+# ==============================================================================
+*.json diff=json
+*.xml diff=xml
+*.py diff=python
+*.js diff=javascript
+*.cs diff=csharp
+*.java diff=java
+*.rb diff=ruby
+
+# ==============================================================================
+# Merge Strategy
+# ==============================================================================
+.gitattributes merge=union
+*.lock merge=union
