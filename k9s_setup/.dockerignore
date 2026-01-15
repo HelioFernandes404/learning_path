@@ -1,32 +1,23 @@
 # ==============================================================================
-# Environment & Secrets
+# Version Control & Git
 # ==============================================================================
-.env
-.env.local
-.env.*.local
-.env.prod
-*.key
-*.pem
-*.p12
-*.pfx
+.git
+.gitignore
+.gitattributes
+.github/
 
 # ==============================================================================
-# Kubeconfig & Kubernetes (sensitive data)
+# Documentation & Config
 # ==============================================================================
-kubeconfig
-kubeconfig.*
-cogcs.yml
-cogcs.yml.bak
-*.yml
-*.yaml
-*.yml.bak
-*.yaml.bak
-.kube/
-inventory/
-!inventory/.gitkeep
+README.md
+CLAUDE.md
+*.md
+docs/
+LICENSE
+CHANGELOG.md
 
 # ==============================================================================
-# Python
+# Python Development
 # ==============================================================================
 __pycache__/
 *.py[cod]
@@ -45,8 +36,6 @@ parts/
 sdist/
 var/
 wheels/
-pip-wheel-metadata/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -57,7 +46,6 @@ venv/
 env/
 ENV/
 .venv
-.env
 .virtualenv
 virtualenv/
 
@@ -66,16 +54,15 @@ virtualenv/
 # ==============================================================================
 .vscode/
 .idea/
-*.swp
-*.swo
-*~
-.DS_Store
 *.sublime-workspace
 *.sublime-project
 .project
 .pydevproject
 .settings/
 *.iml
+*.swp
+*.swo
+*~
 
 # ==============================================================================
 # Testing & Coverage
@@ -86,27 +73,47 @@ virtualenv/
 htmlcov/
 .tox/
 .hypothesis/
-*.cover
+tests/
 
 # ==============================================================================
-# Build & Dependencies
+# CI/CD & DevOps
 # ==============================================================================
-.cache/
-*.log
-uv.lock
-Pipfile.lock
-poetry.lock
+.gitlab-ci.yml
+.github/workflows/
+.travis.yml
+.circleci/
+Jenkinsfile
+.env
+.env.local
+.env.*.local
 
 # ==============================================================================
-# Local & Temporary
+# OS & Temporary
 # ==============================================================================
-.tmp/
-tmp/
-*.bak
-*.backup
-*.swp
-*.swo
-*~
 .DS_Store
 .directory
 Thumbs.db
+.tmp/
+tmp/
+*.log
+*.bak
+*.backup
+
+# ==============================================================================
+# Node (if any frontend)
+# ==============================================================================
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# ==============================================================================
+# Sensitive Data
+# ==============================================================================
+*.key
+*.pem
+*.p12
+*.pfx
+kubeconfig*
+inventory/
+secrets/
+.ssh/
