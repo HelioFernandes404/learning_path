@@ -1,1 +1,0 @@
-# Cache optimization validation
