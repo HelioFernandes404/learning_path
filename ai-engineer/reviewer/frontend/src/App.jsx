@@ -4,9 +4,10 @@ import { CardList } from './features/cards/CardList';
 import { TodayReviews } from './features/reviews/TodayReviews';
 import { StudyPlan } from './features/studyPlan/StudyPlan';
 import { HowItWorks } from './features/info/HowItWorks';
+import { LearningStrategy } from './features/info/LearningStrategy';
 import { cardApi } from './shared/api/cardApi';
 import { Button } from './shared/ui/button';
-import { LayoutGrid, Calendar, ListTodo, Settings, HelpCircle } from 'lucide-react';
+import { LayoutGrid, Calendar, ListTodo, Settings, HelpCircle, BrainCircuit } from 'lucide-react';
 
 function App() {
   const [view, setView] = useState('today'); 
@@ -41,6 +42,7 @@ function App() {
             {[
               { id: 'today', label: 'Hoje', icon: LayoutGrid },
               { id: 'plan', label: 'Plano', icon: Calendar },
+              { id: 'strategy', label: 'Estratégia', icon: BrainCircuit },
               { id: 'manage', label: 'Gerenciar', icon: Settings },
               { id: 'how', label: 'Como funciona', icon: HelpCircle },
             ].map((item) => (
@@ -68,6 +70,10 @@ function App() {
           
           {view === 'plan' && (
             <StudyPlan />
+          )}
+
+          {view === 'strategy' && (
+            <LearningStrategy onNavigate={(v) => setView(v)} />
           )}
 
           {view === 'how' && (
