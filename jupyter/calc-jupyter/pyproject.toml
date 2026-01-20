@@ -1,5 +1,5 @@
 [project]
-name = "jupyter"
+name = "calc-jupyter"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -9,10 +9,5 @@ dependencies = []
 [dependency-groups]
 dev = [
     "ipykernel>=7.1.0",
-]
-
-[tool.uv.workspace]
-members = [
-    "calc-cells",
-    "calc-jupyter",
+    "ruff>=0.14.13",
 ]
