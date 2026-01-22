@@ -1,5 +1,0 @@
-sounddevice
-soundfile
-requests
-simpleaudio
-wave

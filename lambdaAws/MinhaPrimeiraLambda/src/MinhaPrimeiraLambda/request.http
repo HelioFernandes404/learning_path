@@ -1,5 +1,0 @@
-POST https://jjnm7prbyhsr2iokhap7gpwepy0wbhsd.lambda-url.sa-east-1.on.aws/
-
-{
-  "nome": "Hélio"
-}

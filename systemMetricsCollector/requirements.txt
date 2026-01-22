@@ -1,8 +1,0 @@
-python-dotenv
-psutil
-prometheus_client
-pytz
-requests
-opentelemetry-api
-opentelemetry-sdk
-opentelemetry-exporter-otlp-proto-grpc
