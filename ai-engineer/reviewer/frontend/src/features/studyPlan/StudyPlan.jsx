@@ -3,7 +3,7 @@ import { cardApi } from '../../shared/api/cardApi';
 import { Card, CardHeader, CardTitle, CardContent } from '../../shared/ui/card';
 import { Button } from '../../shared/ui/button';
 import { Input } from '../../shared/ui/input';
-import { PlusCircle, Calendar } from 'lucide-react';
+import { PlusCircle, Calendar, Trash2 } from 'lucide-react';
 
 export const StudyPlan = () => {
   const [months, setMonths] = useState([]);
@@ -42,6 +42,18 @@ export const StudyPlan = () => {
       fetchData();
     } catch (error) {
       console.error('Error adding month', error);
+    }
+  };
+
+  const handleDeleteMonth = async (monthId) => {
+    if (!confirm('Tem certeza que deseja deletar este módulo? Todos os cards associados serão mantidos, mas perderão a referência ao módulo.')) {
+      return;
+    }
+    try {
+      await cardApi.deleteMonth(monthId);
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting month', error);
     }
   };
 
@@ -90,10 +102,20 @@ export const StudyPlan = () => {
                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">Módulo {month.number}</span>
                     <CardTitle className="text-xl font-bold text-slate-800 pt-1">{month.title}</CardTitle>
                   </div>
-                  <div className="text-right">
-                    <span className="text-xs font-black text-slate-400 group-hover:text-indigo-600 transition-colors">
-                      {monthCards.length} {monthCards.length === 1 ? 'CARD' : 'CARDS'}
-                    </span>
+                  <div className="flex items-center gap-2">
+                    <div className="text-right">
+                      <span className="text-xs font-black text-slate-400 group-hover:text-indigo-600 transition-colors">
+                        {monthCards.length} {monthCards.length === 1 ? 'CARD' : 'CARDS'}
+                      </span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDeleteMonth(month.id)}
+                      className="h-8 w-8 hover:bg-red-50 hover:text-red-600 transition-colors"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               </CardHeader>

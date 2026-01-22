@@ -15,6 +15,7 @@ export const cardApi = {
   // Months
   getMonths: () => api.get('/months'),
   createMonth: (monthData) => api.post('/months', monthData),
+  deleteMonth: (id) => api.delete(`/months/${id}`),
   
   // Check-ins
   getTodayCheckIn: () => api.get('/checkins/today'),

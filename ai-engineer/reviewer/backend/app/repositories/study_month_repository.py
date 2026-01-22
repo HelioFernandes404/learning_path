@@ -28,3 +28,11 @@ class StudyMonthRepository:
 
     def get_by_id(self, month_id: int):
         return self.db.query(StudyMonth).filter(StudyMonth.id == month_id).first()
+
+    def delete(self, month_id: int):
+        month = self.get_by_id(month_id)
+        if month:
+            self.db.delete(month)
+            self.db.commit()
+            return True
+        return False

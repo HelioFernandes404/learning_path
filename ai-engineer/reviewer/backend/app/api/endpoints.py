@@ -105,6 +105,14 @@ def create_month(month: StudyMonthCreate, db: Session = Depends(get_db)):
     repo = StudyMonthRepository(db)
     return repo.create(month.title, month.number)
 
+@router.delete("/months/{month_id}")
+def delete_month(month_id: int, db: Session = Depends(get_db)):
+    repo = StudyMonthRepository(db)
+    success = repo.delete(month_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Month not found")
+    return {"ok": True}
+
 @router.get("/checkins/today", response_model=Optional[CheckInResponse])
 def get_today_checkin(db: Session = Depends(get_db)):
     repo = WeeklyCheckInRepository(db)
