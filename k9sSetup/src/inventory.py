@@ -74,10 +74,13 @@ def extract_hosts_from_inventory(inv_data: Any) -> Dict[str, Dict[str, Any]]:
 
     for group_name, group_data in all_data["children"].items():
         if isinstance(group_data, dict) and "hosts" in group_data:
-            for host_name, host_config in group_data["hosts"].items():
-                hosts[host_name] = {
-                    "group": group_name,
-                    "config": host_config or {}
-                }
+            # Check if hosts is not None and is a dict
+            hosts_data = group_data["hosts"]
+            if hosts_data and isinstance(hosts_data, dict):
+                for host_name, host_config in hosts_data.items():
+                    hosts[host_name] = {
+                        "group": group_name,
+                        "config": host_config or {}
+                    }
 
     return hosts

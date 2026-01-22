@@ -195,3 +195,80 @@ def save_tunnel_pid(context_name: str, pid: Optional[int], state_dir: Optional[P
         pid_file = get_tunnel_pid_file(context_name, state_dir)
         with open(pid_file, 'w') as f:
             f.write(str(pid))
+
+
+def get_network_metadata_file(context_name: str, state_dir: Optional[Path] = None) -> Path:
+    """
+    Get the network metadata file path for a context.
+
+    Args:
+        context_name: Kubernetes context name
+        state_dir: Custom state directory (default: TUNNEL_STATE_DIR)
+
+    Returns:
+        Path: Path to network metadata file
+    """
+    if state_dir is None:
+        state_dir = TUNNEL_STATE_DIR
+
+    state_dir.mkdir(parents=True, exist_ok=True)
+    return state_dir / f"{context_name}.network"
+
+
+def save_network_metadata(
+    context_name: str,
+    network_type: Optional[str] = None,
+    network_range: Optional[str] = None,
+    sshuttle_command: Optional[str] = None,
+    needs_vpn: bool = False,
+    internal_ip: Optional[str] = None,
+    state_dir: Optional[Path] = None
+) -> None:
+    """
+    Save network metadata for a context.
+
+    Args:
+        context_name: Kubernetes context name
+        network_type: Type of network requirement ('sshuttle', 'vpn', 'direct')
+        network_range: Network range (e.g., '192.168.90.0/24')
+        sshuttle_command: Full sshuttle command to run
+        needs_vpn: Whether VPN is required
+        internal_ip: Internal IP of the cluster
+        state_dir: Custom state directory (default: TUNNEL_STATE_DIR)
+    """
+    # Only save if there are actual network requirements
+    if not network_type and not needs_vpn:
+        return
+
+    metadata = {
+        'network_type': network_type,
+        'network_range': network_range,
+        'sshuttle_command': sshuttle_command,
+        'needs_vpn': needs_vpn,
+        'internal_ip': internal_ip
+    }
+
+    # Remove None values
+    metadata = {k: v for k, v in metadata.items() if v is not None}
+
+    network_file = get_network_metadata_file(context_name, state_dir)
+
+    try:
+        import yaml
+        with open(network_file, 'w') as f:
+            yaml.safe_dump(metadata, f, default_flow_style=False)
+        logger.debug(f"Saved network metadata for {context_name}")
+    except Exception as e:
+        logger.warning(f"Failed to save network metadata for {context_name}: {e}")
+
+
+def remove_network_metadata(context_name: str, state_dir: Optional[Path] = None) -> None:
+    """
+    Remove network metadata file for a context.
+
+    Args:
+        context_name: Kubernetes context name
+        state_dir: Custom state directory (default: TUNNEL_STATE_DIR)
+    """
+    network_file = get_network_metadata_file(context_name, state_dir)
+    network_file.unlink(missing_ok=True)

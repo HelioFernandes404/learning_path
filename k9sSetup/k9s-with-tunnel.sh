@@ -68,6 +68,56 @@ function get_tunnel_pid() {
     fi
 }
 
+function check_network_requirements() {
+    # Check if context has network requirements (VPN/sshuttle)
+    # Args: $1 = context name
+    # Returns: 0 if validation passes or user confirms, 1 if user cancels
+    local context="$1"
+    local network_file="$TUNNEL_STATE_DIR/${context}.network"
+
+    if [[ ! -f "$network_file" ]]; then
+        # No network requirements
+        return 0
+    fi
+
+    # Parse YAML network metadata (simple grep-based parsing)
+    local network_type=$(grep '^network_type:' "$network_file" 2>/dev/null | awk '{print $2}')
+    local network_range=$(grep '^network_range:' "$network_file" 2>/dev/null | awk '{print $2}')
+    local sshuttle_cmd=$(grep '^sshuttle_command:' "$network_file" 2>/dev/null | sed 's/^sshuttle_command: //' | tr -d '"')
+    local needs_vpn=$(grep '^needs_vpn:' "$network_file" 2>/dev/null | awk '{print $2}')
+
+    local has_warning=false
+
+    # Check VPN requirement
+    if [[ "$needs_vpn" == "true" ]]; then
+        echo -e "${YELLOW}⚠ WARNING: This context requires VPN connection${NC}"
+        has_warning=true
+    fi
+
+    # Check sshuttle requirement
+    if [[ "$network_type" == "sshuttle" ]] && [[ -n "$network_range" ]]; then
+        # Check if sshuttle is running
+        if ! pgrep -f "sshuttle.*$network_range" > /dev/null 2>&1; then
+            echo -e "${YELLOW}⚠ WARNING: This context requires sshuttle for $network_range${NC}"
+            if [[ -n "$sshuttle_cmd" ]]; then
+                echo -e "${YELLOW}   Run: $sshuttle_cmd${NC}"
+            fi
+            has_warning=true
+        fi
+    fi
+
+    if [[ "$has_warning" == "true" ]]; then
+        echo ""
+        read -p "Continue anyway? (y/n) " -n 1 -r
+        echo ""
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            return 1
+        fi
+    fi
+
+    return 0
+}
+
 function ensure_tunnel() {
     # Verifies tunnel is running for current context, exits if not
     # Prints status and exits with error code if tunnel is down
@@ -75,7 +125,8 @@ function ensure_tunnel() {
 
     if [[ -z "$context" ]]; then
         echo -e "${RED}✗ No current kubernetes context set${NC}"
-        echo "Run: source venv/bin/activate && python3 fetch_k3s_config.py"
+        echo "Run: make run         # Connect single cluster"
+        echo "     make multi-connect  # Connect multiple clusters"
         exit 1
     fi
 
@@ -85,8 +136,14 @@ function ensure_tunnel() {
         echo -e "${GREEN}✓ Tunnel already running${NC} (PID: $pid)"
     else
         echo -e "${YELLOW}⚠ Tunnel not running for context '$context'${NC}"
-        echo "Please run: source venv/bin/activate && python3 fetch_k3s_config.py"
+        echo "Please run: make run  # or make multi-connect"
         echo "Or create tunnel manually (check the output from fetch script)"
+        exit 1
+    fi
+
+    # Check network requirements
+    if ! check_network_requirements "$context"; then
+        echo "Cancelled."
         exit 1
     fi
 }

@@ -18,11 +18,17 @@ make config
 # ou edite: ~/.k9s-config/config.yaml
 # Docs: docs/CONFIG.md
 
-# 4. Adicionar cluster
-make add-cluster
+# 4a. Conectar a um único cluster
+make run
+
+# 4b. Conectar a múltiplos clusters simultaneamente (NOVO!)
+make multi-connect
 
 # 5. Abrir k9s
 make k9s
+
+# 6. Ver status de todos os clusters conectados
+make status
 ```
 
 ### Modo Tradicional (sem Makefile)
@@ -30,7 +36,14 @@ make k9s
 ```bash
 ./init.sh
 source venv/bin/activate
+
+# Um cluster
 python3 fetch_k3s_config.py
+
+# Múltiplos clusters
+python3 multi_connect.py
+
+# Abrir k9s
 ./k9s-with-tunnel.sh
 ```
 
@@ -130,33 +143,86 @@ Isso verifica se o túnel está ativo e abre k9s em modo debug.
 
 ---
 
-## 🔄 Trocar de Cluster
+## 🔄 Múltiplos Clusters Simultâneos (NOVO!)
 
-### Opção 1: Reconfigurar tudo
+### Conectar a múltiplos clusters de uma vez
 
 ```bash
-source venv/bin/activate
-python3 fetch_k3s_config.py
-# → Escolher nova empresa/host
-./k9s-with-tunnel.sh
+make multi-connect
 ```
 
-### Opção 2: Usar contexto existente
+**O que acontece:**
+1. 📋 Mostra lista de todos os clusters disponíveis com checkboxes
+2. ✅ Selecione múltiplos clusters (espaço para marcar, enter para confirmar)
+3. ⚠️ Mostra avisos de VPN/sshuttle se necessário
+4. 🔗 Conecta a cada cluster sequencialmente
+5. 🎯 Define o primeiro cluster selecionado como ativo
+
+**Exemplo de uso:**
+```
+Select clusters to connect (space to select, enter to confirm):
+[x] hostinger: vps-prod
+[x] primaria: prod-k3s [sshuttle]
+[ ] cogcs: cogcs-server
+
+✓ Connected: 2/2 clusters
+  ✓ hostinger-vps-prod (localhost:16443)
+  ✓ primaria-prod-k3s (localhost:17891) ⚠ requires sshuttle
+
+⚠ Active network requirements:
+  🔒 sshuttle -v -r helio@100.64.5.10 192.168.90.0/24
+
+Active context: hostinger-vps-prod
+```
+
+### Trocar entre clusters conectados
 
 ```bash
-# Listar contextos
-kubectl config get-contexts
+# Ver status de todos os clusters
+make status
 
-# Trocar
+# Trocar contexto
 kubectl config use-context empresa-host
 
-# Abrir k9s
-./k9s-with-tunnel.sh
+# Abrir k9s (validação automática de rede)
+make k9s
+```
+
+### Adicionar mais um cluster
+
+Se você já tem alguns clusters conectados e quer adicionar mais um:
+
+```bash
+# Adicionar um único cluster
+make run
+
+# Ou reconectar múltiplos
+make multi-connect
 ```
 
 ---
 
 ## 🛠️ Comandos Úteis
+
+### Ver Status de Clusters
+
+```bash
+# Ver todos os clusters conectados com seus túneis
+make status
+```
+
+**Output:**
+```
+Connected clusters:
+  ✓ hostinger-vps-prod (localhost:16443) [PID: 12345]
+  ✓ primaria-prod-k3s (localhost:17891) [PID: 12346] ⚠ requires sshuttle
+  ✗ cogcs-cogcs (tunnel down)
+
+Current context: hostinger-vps-prod
+
+Active network requirements:
+  🔒 sshuttle -v -r helio@100.64.5.10 192.168.90.0/24
+```
 
 ### Gerenciar Túneis
 
@@ -201,8 +267,9 @@ kubectl config delete-context empresa-host
 ```
 k9s-config/
 ├── Makefile                  # Interface principal (use make help)
-├── fetch_k3s_config.py      # Script principal
-├── k9s-with-tunnel.sh        # Helper k9s + túneis
+├── fetch_k3s_config.py       # Conectar cluster único
+├── multi_connect.py          # Conectar múltiplos clusters (NOVO!)
+├── k9s-with-tunnel.sh        # Helper k9s + túneis + validação de rede
 ├── init.sh                   # Setup venv
 ├── inventory/                # Inventários (Ansible-style)
 │   ├── empresa_hosts.yml
@@ -211,9 +278,18 @@ k9s-config/
 │   ├── inventory.py
 │   ├── ssh.py
 │   ├── tunnel.py
+│   ├── network_validator.py  # Validação VPN/sshuttle (NOVO!)
+│   ├── multi_status.py       # Status multi-cluster (NOVO!)
 │   └── ...
 ├── venv/                     # Ambiente Python
 └── README.md                 # Este arquivo
+```
+
+**Estado persistente:**
+```
+~/.local/state/k9s-tunnels/
+├── empresa-host.pid          # PID do túnel SSH
+└── empresa-host.network      # Metadados de rede (VPN/sshuttle)
 ```
 
 ---

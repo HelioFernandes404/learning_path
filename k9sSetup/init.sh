@@ -3,26 +3,25 @@
 # init.sh - Initialize k9s-config project
 #
 # DESCRIPTION:
-#   Sets up Python virtual environment and installs dependencies for the k9s-config project.
+#   Sets up Python project using uv for dependency management.
 #   Optionally runs the main fetch_k3s_config.py script immediately after setup.
 #
 # USAGE:
-#   ./init.sh               # Setup venv and run fetch script
-#   source venv/bin/activate && python3 fetch_k3s_config.py  # Manual approach
+#   ./init.sh               # Setup with uv and run fetch script
+#   uv run python fetch_k3s_config.py  # Manual approach
 #
 # FEATURES:
-#   - Creates isolated Python virtual environment (.venv)
-#   - Installs all dependencies from requirements.txt
-#   - Upgrades pip to latest version
+#   - Uses uv for fast, modern Python dependency management
+#   - Syncs all dependencies from pyproject.toml
+#   - Creates isolated virtual environment automatically
 #   - Runs fetch_k3s_config.py to fetch first kubeconfig
 #
 # ENVIRONMENT:
 #   PROJECT_DIR: Detected automatically as script directory
-#   VENV_DIR: Default .venv (can be modified below if needed)
 #
 # REQUIREMENTS:
-#   - Python 3.8+
-#   - pip (bundled with Python)
+#   - Python 3.10+
+#   - uv (install via: curl -LsSf https://astral.sh/uv/install.sh | sh)
 #
 # EXIT CODES:
 #   0: Success
@@ -31,31 +30,24 @@
 set -e  # Exit immediately on any error
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-VENV_DIR="$PROJECT_DIR/venv"
 PYTHON_SCRIPT="$PROJECT_DIR/fetch_k3s_config.py"
 
 echo "=== K3s Config Fetcher Setup ==="
 echo "Project directory: $PROJECT_DIR"
 
-# Create virtual environment if it doesn't exist
-if [ ! -d "$VENV_DIR" ]; then
-    echo "Creating virtual environment at $VENV_DIR..."
-    python3 -m venv "$VENV_DIR"
-else
-    echo "Virtual environment already exists at $VENV_DIR"
+# Check if uv is installed
+if ! command -v uv &> /dev/null; then
+    echo "ERROR: uv is not installed"
+    echo "Install uv with: curl -LsSf https://astral.sh/uv/install.sh | sh"
+    exit 1
 fi
 
-# Activate virtual environment
-echo "Activating virtual environment..."
-source "$VENV_DIR/bin/activate"
+echo "Using uv version: $(uv --version)"
 
-# Upgrade pip to latest version
-echo "Upgrading pip..."
-pip install --upgrade pip -q
-
-# Install all dependencies
-echo "Installing dependencies from requirements.txt..."
-pip install -r "$PROJECT_DIR/requirements.txt" -q
+# Sync dependencies using uv
+echo "Syncing dependencies with uv..."
+cd "$PROJECT_DIR"
+uv sync
 
 # Create default config directory and copy example config
 echo "Setting up configuration..."
@@ -81,7 +73,7 @@ fi
 if [ -z "${SKIP_FETCH:-}" ]; then
     echo ""
     echo "Running fetch_k3s_config.py..."
-    python3 "$PYTHON_SCRIPT"
+    uv run python "$PYTHON_SCRIPT"
 fi
 
 echo ""
@@ -90,11 +82,13 @@ echo ""
 echo "Next steps:"
 echo "  1. Add inventory files to inventory/ directory"
 echo "  2. Edit your config: $CONFIG_DIR/config.yaml"
-echo "  3. Add cluster: make add-cluster (or: python3 fetch_k3s_config.py)"
-echo "  4. Launch k9s: make k9s (or: $PROJECT_DIR/k9s-with-tunnel.sh)"
+echo "  3. Connect single cluster: make run"
+echo "  4. Connect multiple clusters: make multi-connect"
+echo "  5. Launch k9s: make k9s"
 echo ""
+echo "To view status: make status"
 echo "To view logs: make logs (or: tail -f $LOG_DIR/k9s-config.log)"
-echo "To list tunnels: make tunnel-list (or: $PROJECT_DIR/k9s-with-tunnel.sh list)"
+echo "To list tunnels: make tunnel-list"
 echo ""
 echo "For all commands: make help"
 echo "For config details: $PROJECT_DIR/docs/CONFIG.md"

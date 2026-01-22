@@ -14,7 +14,7 @@ GREEN := \033[0;32m
 YELLOW := \033[1;33m
 NC := \033[0m # No Color
 
-.PHONY: help run k9s tunnel-list tunnel-kill tunnel-kill-all clean logs config test
+.PHONY: help init sync run multi-connect k9s status tunnel-list tunnel-kill tunnel-kill-all clean logs config test
 
 ## help: Show this help message
 help:
@@ -22,24 +22,46 @@ help:
 	@echo ""
 	@echo "Usage: make [target]"
 	@echo ""
-	@echo "Main command: $(YELLOW)make run$(NC) (sets up everything and starts)"
+	@echo "Main commands:"
+	@echo "  $(YELLOW)make init$(NC)          - Initialize project (first time setup)"
+	@echo "  $(YELLOW)make run$(NC)           - Connect to single cluster"
+	@echo "  $(YELLOW)make multi-connect$(NC) - Connect to multiple clusters"
 	@echo ""
-	@echo "Targets:"
+	@echo "All targets:"
 	@awk '/^##/ { \
 		helpMessage = substr($$0, 4); \
 		split(helpMessage, parts, ":"); \
 		printf "  $(YELLOW)%-20s$(NC) %s\n", parts[1], parts[2]; \
 	}' $(MAKEFILE_LIST)
 
-## run: Start the project (auto-setup and run)
+## init: Initialize project (first time setup)
+init:
+	@echo "$(GREEN)Initializing K9s Multi-Context Manager...$(NC)"
+	@bash $(PROJECT_DIR)/init.sh
+
+## sync: Sync dependencies with uv
+sync:
+	@echo "$(GREEN)Syncing dependencies...$(NC)"
+	@uv sync
+
+## run: Connect to a single cluster
 run:
 	@echo "$(GREEN)Starting K9s Multi-Context Manager...$(NC)"
 	@uv run python3 $(PYTHON_SCRIPT)
+
+## multi-connect: Connect to multiple clusters simultaneously
+multi-connect:
+	@echo "$(GREEN)Starting multi-cluster connection...$(NC)"
+	@uv run python3 $(PROJECT_DIR)/multi_connect.py
 
 ## k9s: Start k9s with tunnel verification
 k9s:
 	@echo "$(GREEN)Starting k9s...$(NC)"
 	@bash $(TUNNEL_SCRIPT)
+
+## status: Show status of all connected clusters
+status:
+	@uv run python3 -c "from src.multi_status import show_status; show_status()"
 
 ## tunnel-list: List all active SSH tunnels
 tunnel-list:
