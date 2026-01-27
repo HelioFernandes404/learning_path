@@ -35,10 +35,15 @@
     <main class="container">
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
-            <div class="mb-8 grid gap-4">
+            <div class="toast-container">
               {% for category, message in messages %}
-                <div class="card p-6" style="border-left: 4px solid {% if category == 'success' %}var(--success){% else %}var(--muted-foreground){% endif %};">
-                    <p class="text-sm font-medium">{{ message }}</p>
+                <div class="toast toast-{{ category }}">
+                    <div class="flex-1">
+                        <p class="text-sm font-semibold">{{ message }}</p>
+                    </div>
+                    <button class="text-muted hover:text-foreground transition-colors" onclick="this.parentElement.remove()">
+                        <i class="ph ph-x text-xs"></i>
+                    </button>
                 </div>
               {% endfor %}
             </div>

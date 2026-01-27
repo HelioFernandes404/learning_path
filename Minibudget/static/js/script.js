@@ -1,12 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Auto-dismiss alerts after 5 seconds
-    const alerts = document.querySelectorAll('.card[style*="border-left"]');
-    if (alerts.length > 0) {
+    // Initialize Phosphor Icons
+    if (typeof PhosphorIcon !== 'undefined') {
+        PhosphorIcon.replace();
+    }
+
+    // Auto-dismiss toasts after 5 seconds
+    const toasts = document.querySelectorAll('.toast');
+    if (toasts.length > 0) {
         setTimeout(() => {
-            alerts.forEach(alert => {
-                alert.style.transition = 'opacity 0.5s ease-out';
-                alert.style.opacity = '0';
-                setTimeout(() => alert.remove(), 500);
+            toasts.forEach(toast => {
+                toast.style.transform = 'translateX(100%)';
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
             });
         }, 5000);
     }

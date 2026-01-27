@@ -1,3 +1,3 @@
-{% macro icon(name, weight='regular', class='') %}
-    <i class="ph-{{ weight }} ph-{{ name }} {{ class }}"></i>
+{% macro icon(name, weight=None, class='') %}
+    <i class="ph{% if weight %}-{{ weight }}{% else %} ph{% endif %}-{{ name }} {{ class }}"></i>
 {% endmacro %}

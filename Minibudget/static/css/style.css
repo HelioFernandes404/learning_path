@@ -2,7 +2,7 @@
    1. RESET & BASE
    ========================================= */
 *, *::before, *::after {
-    box-sizing: border_box;
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
@@ -92,6 +92,34 @@ body {
 .gap-4 { gap: 1rem; }
 .mb-8 { margin-bottom: 2rem; }
 .p-6 { padding: 1.5rem; }
+.p-8 { padding: 2rem; }
+
+/* Grid Utils */
+.grid-cols-12 { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+.lg\:col-span-4 { grid-column: span 4 / span 4; }
+.lg\:col-span-1 { grid-column: span 1 / span 1; }
+.lg\:col-span-7 { grid-column: span 7 / span 7; }
+.place-self-center { place-self: center; }
+
+/* Colors & Backgrounds */
+.bg-gradient-to-br { background-image: linear-gradient(to bottom right, var(--tw-gradient-stops)); }
+.from-card { --tw-gradient-from: var(--card); --tw-gradient-to: rgb(255 255 255 / 0); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+.to-secondary\/30 { --tw-gradient-to: rgba(244, 244, 245, 0.3); }
+.bg-secondary\/50 { background-color: rgba(244, 244, 245, 0.5); }
+.bg-danger\/10 { background-color: rgba(239, 68, 68, 0.1); }
+.bg-success\/10 { background-color: rgba(16, 185, 129, 0.1); }
+.bg-primary\/5 { background-color: rgba(24, 24, 27, 0.05); }
+.border-border\/40 { border-color: rgba(228, 228, 231, 0.4); }
+.border-border\/60 { border-color: rgba(228, 228, 231, 0.6); }
+
+/* Typography */
+.text-5xl { font-size: 3rem; line-height: 1; }
+.tracking-tighter { letter-spacing: -0.05em; }
+.tracking-widest { letter-spacing: 0.1em; }
+.font-extrabold { font-weight: 800; }
+.font-black { font-weight: 900; }
+.leading-none { line-height: 1; }
+.italic { font-style: italic; }
 
 /* =========================================
    3. COMPONENTS & MICROINTERACTIONS
@@ -300,6 +328,13 @@ header {
 .font-bold { font-weight: 700; }
 .cursor-not-allowed { cursor: not-allowed; opacity: 0.5; }
 
+/* Tamanhos Utilitários */
+.w-4 { width: 1rem; }
+.h-4 { height: 1rem; }
+.w-7 { width: 1.75rem; }
+.h-7 { height: 1.75rem; }
+.mr-2 { margin-right: 0.5rem; }
+
 /* Menu Lateral (Settings) */
 .sidebar-nav {
     display: flex;
@@ -418,3 +453,42 @@ header {
     border: none;
     margin-bottom: 1rem;
 }
+
+/* =========================================
+   5. TOAST NOTIFICATIONS
+   ========================================= */
+.toast-container {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    pointer-events: none;
+}
+
+.toast {
+    min-width: 300px;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    pointer-events: auto;
+    animation: toast-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.2s ease;
+}
+
+@keyframes toast-in {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.toast-success { border-left: 4px solid var(--success); }
+.toast-neutral { border-left: 4px solid var(--muted-foreground); }
+.toast-danger { border-left: 4px solid var(--danger); }
+
